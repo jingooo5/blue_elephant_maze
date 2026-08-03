@@ -6,13 +6,16 @@ JavaScript는 타이머 하나 때문에 `game.js` 한 파일만 씁니다.
 ```
 index.html    페이지 0 — 시작 화면 (새 게임 시작)
 lock.html     페이지 1 — 노트북 잠금화면 (비밀번호 입력)
-photo.html    페이지 2 — 전체 화면 사진
-styles.css    세 페이지 공용 스타일
-game.js       세 페이지 공용 — 타이머 · 뒤로가기 버튼
-images/       사진 넣을 폴더 (아직 비어 있음)
+photo.html    페이지 2 — 카카오톡 캡처 + 말풍선
+page3.html    페이지 3 — 비밀 대화방 잠금화면 (iOS 팝업으로 비밀번호 입력)
+page4.html    페이지 4 — 비밀 대화방 공개
+styles.css    다섯 페이지 공용 스타일
+game.js       다섯 페이지 공용 — 타이머 · 뒤로가기 버튼 · 비밀번호 판정
+images/       사진 폴더
 ```
 
-진행 흐름: `index.html` → (새 게임 시작) → `lock.html` → (비밀번호) → `photo.html`
+진행 흐름: `index.html` → (새 게임 시작) → `lock.html` → (비밀번호) → `photo.html` →
+(다음) → `page3.html` → (비밀번호) → `page4.html`
 
 ## 페이지 0 — 시작 화면
 
@@ -44,7 +47,8 @@ images/       사진 넣을 폴더 (아직 비어 있음)
 **뒤로가기 — 왼쪽 아래**
 
 - 각 페이지 `<body data-prev="...">` 에 적힌 곳으로 갑니다
-  (`lock.html` → `index.html`, `photo.html` → `lock.html`).
+  (`lock.html` → `index.html`, `photo.html` → `lock.html`,
+  `page3.html` → `photo.html`, `page4.html` → `page3.html`).
 - 페이지 0에는 `data-prev` 가 없어서 버튼도 안 생깁니다. 페이지를 더 늘릴 땐
   `<body>` 에 `data-prev` 한 줄만 적어 주면 됩니다.
 - 진행 중에 페이지 0으로 돌아가면 타이머는 계속 돌고, 시작 버튼 문구가
@@ -87,16 +91,48 @@ images/       사진 넣을 폴더 (아직 비어 있음)
 | 페이지 0 배경 | `images/cover.jpg` | `styles.css` 맨 위 `--cover` 한 줄 |
 | 페이지 1 바탕화면 | `images/wallpaper.jpg` | `styles.css` 맨 위 `--wallpaper` 한 줄 |
 | 페이지 1 계정 사진 | `images/avatar.jpg` | `lock.html` 의 `.avatar` 안에 `<img class="avatar__img" ...>` 추가 |
-| 페이지 2 전체 사진 | `images/evidence.jpg` | `photo.html` 의 `<img>` 주석 해제 + 자리표시자 `<div>` 삭제 |
+| 페이지 2 카카오톡 캡처 | `images/kakao_bulling.JPG` | `photo.html` 의 `.stage__img` — 이미 연결됨 |
+| 페이지 2 오른쪽 위 말풍선 | `images/thinking.PNG` | `photo.html` 의 `.stage__note` — 이미 연결됨 |
+| 페이지 4 배경 | `images/secret_talk.jpg` | `styles.css` 맨 위 `--secret` 한 줄 — 이미 연결됨 |
 
 **페이지 0에 어두운 배경 사진을 넣는 경우**: 지금은 흰 배경 기준이라 글씨가 진한 색입니다.
 `styles.css` 맨 아래쪽 `--- 어두운 배경 사진을 넣을 때 ---` 주석 블록을 풀면
 제목·문구·엠블럼이 밝은 색으로 바뀌고 반투명 어두운 막이 깔립니다.
 
-페이지 2 사진은 기본이 `object-fit: cover`(화면 꽉 채움, 가장자리 잘림)입니다.
-잘리면 안 되는 단서면 `styles.css` 의 `.stage__img` 에서 `contain` 으로 바꾸세요.
-
 바탕화면 사진이 어두워도 로그인 패널이 흰 카드라서 글씨는 그대로 잘 보입니다.
+
+**페이지 2** 배경은 검은색이고, 캡처(`.stage__img`)와 말풍선(`.stage__note`)을
+나란히 놓는 flex 배치입니다. 둘 다 자기 자리(화면 폭의 절반) 안에서만 커지기 때문에
+창 크기가 바뀌어도 서로 겹치지 않고, 비율도 그대로 유지돼 잘리거나 늘어나지 않습니다.
+남는 자리는 검은 배경 그대로 보입니다. 두 이미지의 몫을 다르게 나누고 싶으면
+`styles.css` 의 `.stage__img` / `.stage__note` 에 있는 `max-width`(각 46vw)를
+조정하면 됩니다.
+
+**페이지 3** 은 사진이 아니라 CSS로 그린 카카오톡 채팅방 + iOS 팝업입니다.
+아래 "페이지 3 — 비밀 대화방" 항목을 보세요.
+
+**페이지 4** 배경은 `background-size: cover` 라 화면을 꽉 채우는 대신 사진 비율과
+화면 비율이 다르면 가장자리가 살짝 잘립니다. 안 잘리게 하려면 `styles.css` 의
+`--secret` 값에서 `cover` 를 `contain` 으로 바꾸세요 (그러면 페이지 2처럼 남는 자리는
+흰 배경으로 보입니다 — 검은 배경을 원하면 `.reveal` 의 `background` 뒤에
+`background-color: #000` 을 추가하면 됩니다).
+
+## 페이지 3 — 비밀 대화방 (잠금)
+
+사진 없이 CSS만으로 그린 목업입니다: 휴대폰 프레임(9:16) 안에 카카오톡 채팅방을
+흐릿하게 깔고, 그 위에 iOS 시스템 알림창 모양으로 비밀번호 입력창을 띄웠습니다.
+
+- **비밀번호를 바꾸려면** `page3.html` 의 `<input pattern="1225">` 한 곳만 고치면
+  됩니다. 자리수도 `lock.html` 과 똑같이 `game.js` 가 `pattern` 길이를 보고 자동으로 맞춥니다.
+- 동작 방식도 `lock.html` 과 동일합니다 — **자리수를 다 채우고 `확인`(또는 Enter)을
+  눌러 틀렸을 때만** 입력칸이 빨갛게 흔들리고 경고가 뜨고, 맞으면 `page4.html` 로 넘어갑니다.
+  (같은 판정 로직을 그대로 재사용한 것이라, `lock.html` 의 비밀번호 동작을 고치면
+  이쪽 규칙도 같이 바뀌는 건 아니고 완전히 독립적입니다 — 두 페이지 비밀번호는 다르게 둬도 됩니다.)
+- `취소` 버튼은 페이지 2로 돌아갑니다(왼쪽 아래 `이전으로` 와 같은 목적지).
+- 흐릿하게 보이는 채팅 말풍선들은 실제 대화 내용이 아니라 CSS로 그린 자리표시자입니다.
+  채팅방 이름(`🔒 비밀 대화방`)이나 말풍선 배치를 바꾸려면 `page3.html` 을 직접 고치면 됩니다.
+- 휴대폰 크기는 화면 높이 기준(`min(82vh, 660px)`)으로 잡혀 있어서, 노트북처럼
+  가로가 넓고 세로가 짧은 화면에서도 항상 화면 안에 들어옵니다.
 
 ## 로컬에서 보기
 

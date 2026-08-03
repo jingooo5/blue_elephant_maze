@@ -16,6 +16,12 @@
      어두운 사진을 넣을 거면 아래 "어두운 배경용" 주석 블록도 함께 켜세요. */
   --cover: #ffffff;
 
+  /* --- 페이지 4 배경 ------------------------------------------------------
+     images/secret_talk.jpg 를 그대로 씁니다. 화면을 꽉 채우되(cover) 비율이
+     달라 잘리는 건 감수합니다 — 그대로 두거나, 잘리면 안 되는 사진이면
+     아래 값을 var(--wallpaper) 처럼 background-size 만 contain 으로 바꾸세요. */
+  --secret: url("images/secret_talk.jpg") center / cover no-repeat;
+
   --blue:       #1f5fd0;   /* 푸른코끼리 파랑 */
   --blue-deep:  #14418f;
   --blue-tint:  #eef3fd;
@@ -170,6 +176,36 @@ body {
 
 .backlink svg { transition: transform .15s ease; }
 .backlink:hover svg { transform: translateX(-2px); }
+
+/* 다음 페이지로. 뒤로가기(.backlink)와 반대편(오른쪽 아래)에 두고,
+   진행 방향인 만큼 파란 버튼으로 눈에 띄게 합니다. */
+.nextlink {
+  position: fixed;
+  right: 22px;
+  bottom: 20px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 13px 9px 17px;
+  background: var(--blue);
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: #fff;
+  text-decoration: none;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, .2),
+    0 12px 28px -14px rgba(0, 0, 0, .6);
+  transition: background-color .15s ease, transform .12s ease;
+}
+
+.nextlink:hover  { background: var(--blue-deep); }
+.nextlink:active { transform: translateY(1px); }
+
+.nextlink svg { transition: transform .15s ease; }
+.nextlink:hover svg { transform: translateX(2px); }
 
 @media (prefers-reduced-motion: reduce) {
   .hud__dot { animation: none; }
@@ -545,43 +581,278 @@ body {
 }
 
 /* =========================================================
+   3. 비밀 대화방 — 카카오톡 잠금화면 (iOS 팝업으로 비밀번호 입력)
+   ========================================================= */
+
+.kakao-gate {
+  min-height: 100vh;
+  margin: 0;
+  background: #f4f5f7;
+  display: grid;
+  place-items: center;
+  padding: 4vh 20px;
+}
+
+/* 세로(9:16) 비율 고정 — 폭이 아니라 높이를 기준으로 잡아야 노트북처럼
+   가로가 넓고 세로가 짧은 화면에서도 항상 화면 안에 들어옵니다. */
+.kakao-gate__phone {
+  position: relative;
+  height: min(82vh, 660px);
+  aspect-ratio: 9 / 16;
+  border: 10px solid #0b0b0d;
+  border-radius: 46px;
+  background: #b7c6d9;
+  box-shadow:
+    0 30px 60px -24px rgba(16, 20, 28, .45),
+    0 10px 24px -12px rgba(16, 20, 28, .3);
+  overflow: hidden;
+}
+
+.kakao-gate__notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 34%;
+  height: 22px;
+  background: #0b0b0d;
+  border-radius: 0 0 14px 14px;
+  z-index: 6;
+}
+
+/* 팝업에 가려진 채팅이라는 걸 보여주기 위해 살짝 흐려 둡니다. */
+.kakao-gate__screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  filter: blur(2.5px);
+}
+
+.kakao-gate__status {
+  flex: none;
+  height: 30px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+.kakao-gate__status-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.kakao-gate__header {
+  flex: none;
+  height: 44px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #191b1f;
+  color: #fff;
+}
+
+.kakao-gate__header svg { flex: none; opacity: .85; }
+
+.kakao-gate__header-title {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  text-align: center;
+}
+
+.kakao-gate__body {
+  flex: 1;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+/* 실제 대화 내용 대신 말풍선 모양만 — 왼쪽은 받은 말풍선(흰색),
+   오른쪽은 보낸 말풍선(카카오 노랑)입니다. */
+.kakao-gate__bubble {
+  height: 22px;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.kakao-gate__bubble--right {
+  align-self: flex-end;
+  background: #fee500;
+}
+
+.kakao-gate__bubble--s { width: 32%; }
+.kakao-gate__bubble--m { width: 52%; }
+.kakao-gate__bubble--l { width: 70%; }
+
+/* iOS 가 시스템 팝업을 띄울 때 배경 화면을 어둡게 누르는 느낌 */
+.kakao-gate__dim {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgba(10, 12, 16, .38);
+}
+
+/* --- iOS 스타일 알림창 --- */
+.ios-alert {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 82%;
+  background: rgba(247, 247, 250, .88);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .35);
+}
+
+.ios-alert__body {
+  padding: 18px 16px 16px;
+  text-align: center;
+}
+
+.ios-alert__title {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 650;
+  color: #1c1c1e;
+}
+
+.ios-alert__message {
+  margin: 4px 0 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #3a3a3c;
+}
+
+/* .field__input 의 기본값(옆으로 늘어나는 플렉스 아이템, 화살표 버튼 붙는 필드)을
+   iOS 알림창의 작은 텍스트 필드로 다시 그립니다. 클래스 두 개짜리 선택자라
+   .field__input 단독 규칙보다 항상 우선합니다. */
+.field__input.ios-alert__input {
+  flex: initial;
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: .5px solid rgba(60, 60, 67, .29);
+  border-radius: 7px;
+  background: #ffffff;
+  font-size: 14px;
+  letter-spacing: .12em;
+  text-align: center;
+  color: #1c1c1e;
+  margin-bottom: 6px;
+}
+
+.field__input.ios-alert__input::placeholder {
+  color: #b8b8bc;
+  letter-spacing: .12em;
+}
+
+.field__input.ios-alert__input:focus {
+  border-color: #0a6cff;
+}
+
+.login.is-wrong .field__input.ios-alert__input {
+  border-color: var(--danger);
+  background: #fdf2f2;
+  animation: shake .34s ease;
+}
+
+.ios-alert__body .error {
+  margin: 6px 0 0;
+  font-size: 11.5px;
+}
+
+.ios-alert__actions {
+  display: flex;
+  border-top: .5px solid rgba(60, 60, 67, .36);
+}
+
+.ios-alert__btn {
+  flex: 1;
+  padding: 11px 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ios-alert__btn--cancel {
+  color: #1c1c1e;
+  border-right: .5px solid rgba(60, 60, 67, .36);
+}
+
+.ios-alert__btn--ok {
+  color: #0a6cff;
+  font-weight: 650;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login.is-wrong .field__input.ios-alert__input { animation: none; }
+}
+
+/* =========================================================
+   4. 비밀 대화방 공개
+   ========================================================= */
+
+.reveal {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--secret);
+}
+
+/* =========================================================
    2. 사진 화면
    ========================================================= */
 
+/* 카카오톡 캡처(세로로 긴 사진)와 말풍선(가로로 넓은 사진)을 나란히 놓는
+   flex 배치입니다. 서로 자기 자리 안에서만 커지기 때문에 창 크기가
+   바뀌어도 겹치지 않습니다. 남는 자리는 검은 배경 그대로 보입니다. */
 .stage {
   margin: 0;
   height: 100vh;
-  background: #ffffff;   /* 이미지가 없는 동안의 배경 */
+  background: #000000;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4vw;
+  padding: 0 4vw;
 }
 
 .stage__img {
   display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;     /* 화면을 가득 채움. 사진 잘림이 싫으면 contain 으로 */
-  object-position: center;
+  width: auto;
+  height: auto;
+  max-width: 46vw;    /* 화면 절반을 넘지 않게 → 말풍선과 겹칠 일이 없음 */
+  max-height: 94vh;
+  object-fit: contain;   /* 잘리거나 늘어나지 않게 비율 그대로 유지 */
 }
 
-/* 이미지 넣으면 지울 자리표시자 */
-.stage__placeholder {
-  height: 100%;
-  display: grid;
-  place-content: center;
-  gap: 10px;
-  text-align: center;
-  color: #b9bec5;
-  background-image:
-    repeating-linear-gradient(45deg, #fafafb 0 14px, #f4f5f6 14px 28px);
-}
-
-.stage__placeholder strong {
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: .01em;
-  color: #a2a8b0;
-}
-
-.stage__placeholder span {
-  font-size: 13px;
+/* 말풍선 — 크기·위치는 이 규칙만 고치면 됩니다. */
+.stage__note {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 46vw;    /* 캡처와 같은 몫만 차지 → 겹치지 않음 */
+  max-height: 60vh;   /* 가로로 넓은 사진이라 세로가 먼저 꽉 참 */
+  border-radius: 14px;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, .3),
+    0 16px 34px -14px rgba(0, 0, 0, .7);
 }

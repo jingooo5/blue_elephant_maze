@@ -10,21 +10,23 @@
 </head>
 <body class="stage" data-prev="lock.html">
 
+  <!-- 카카오톡 폭력 정황 캡처. 비율이 화면과 달라 남는 자리는 검은 배경(.stage)이 그대로 보입니다. -->
+  <img class="stage__img" src="images/kakao_bulling.JPG" alt="">
+
   <!--
-    ==========================================================
-      이미지 준비되면:
-        1) images/ 폴더에 사진을 넣고
-        2) 아래 <img> 주석을 풀어 src 경로를 맞추고
-        3) 그 아래 .stage__placeholder <div> 를 통째로 지웁니다.
-    ==========================================================
+    오른쪽 위 작은 이미지. 어떤 용도인지 명확히 전달받지 못해 우선
+    "생각할 거리를 던지는 코너 스티커"로 배치해 뒀습니다. 위치/크기가
+    다르게 쓰여야 하면 .stage__note 규칙만 고치면 됩니다 (styles.css).
   -->
+  <img class="stage__note" src="images/thinking.PNG" alt="">
 
-  <!-- <img class="stage__img" src="images/evidence.jpg" alt=""> -->
-
-  <div class="stage__placeholder">
-    <strong>이미지 준비 중</strong>
-    <span>photo.html 의 &lt;img&gt; 주석을 풀면 여기에 표시됩니다</span>
-  </div>
+  <a class="nextlink" href="page3.html">
+    다음
+    <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+      <path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor"
+            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
 
 </body>
 </html>
