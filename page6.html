@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>범인 지목</title>
+<link rel="stylesheet" href="styles.css">
+<script src="game.js" defer></script>
+</head>
+<body class="accuse" data-prev="page5.html">
+
+  <!-- 페이지 0 과 같은 코끼리 도안. 한 번만 정의해 두고 카드 네 곳에서 가져다 씁니다.
+       색은 각 카드의 --elephant / --elephant-deep 값이 그대로 들어갑니다. -->
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <symbol id="elephant" viewBox="0 0 130 100">
+      <path d="M110 40 c 10 3, 10 14, 4 19"
+            fill="none" stroke="var(--elephant)" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M16 52 C 5 66, 8 85, 23 85"
+            fill="none" stroke="var(--elephant)" stroke-width="12" stroke-linecap="round"/>
+      <g fill="var(--elephant)">
+        <ellipse cx="76" cy="44" rx="35" ry="28"/>
+        <rect x="50" y="62" width="16" height="30" rx="7"/>
+        <rect x="88" y="62" width="16" height="30" rx="7"/>
+        <circle cx="38" cy="46" r="26"/>
+      </g>
+      <ellipse cx="54" cy="34" rx="15" ry="17" fill="var(--elephant-deep)"/>
+      <circle cx="27" cy="38" r="3.6" fill="#0b0d10"/>
+    </symbol>
+  </svg>
+
+  <h1 class="accuse__title">범인은 이중에 있다</h1>
+
+  <!--
+    ==========================================================
+      정답 카드에만 data-correct 와 data-next 를 답니다.
+      범인을 바꾸려면 그 두 속성을 다른 카드로 옮기면 됩니다.
+      카드 순서를 바꾸고 싶으면 아래 <button> 순서만 바꾸세요.
+    ==========================================================
+  -->
+  <div class="suspects">
+
+    <button class="suspect suspect--green" type="button"
+            data-correct data-next="page7.html">
+      <svg class="suspect__art" viewBox="0 0 130 100"><use href="#elephant"/></svg>
+      <span class="suspect__label">초록 코끼리</span>
+    </button>
+
+    <button class="suspect suspect--pink" type="button">
+      <svg class="suspect__art" viewBox="0 0 130 100"><use href="#elephant"/></svg>
+      <span class="suspect__label">분홍 코끼리</span>
+    </button>
+
+    <button class="suspect suspect--orange" type="button">
+      <svg class="suspect__art" viewBox="0 0 130 100"><use href="#elephant"/></svg>
+      <span class="suspect__label">주황 코끼리</span>
+    </button>
+
+    <button class="suspect suspect--purple" type="button">
+      <svg class="suspect__art" viewBox="0 0 130 100"><use href="#elephant"/></svg>
+      <span class="suspect__label">보라 코끼리</span>
+    </button>
+
+  </div>
+
+  <!-- 틀렸을 때 뜨는 팝업 -->
+  <dialog class="retry">
+    <div class="retry__body">
+      <p class="retry__title">범인이 아니다</p>
+      <p class="retry__text">단서를 다시 떠올려 보세요.</p>
+    </div>
+    <button class="retry__btn" type="button">다시 선택</button>
+  </dialog>
+
+</body>
+</html>

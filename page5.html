@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>정답 입력</title>
+<link rel="stylesheet" href="styles.css">
+<script src="game.js" defer></script>
+</head>
+<body class="answer" data-prev="page4.html">
+
+  <div class="panel answer__panel">
+
+    <div class="answer__emblem" aria-hidden="true">
+      <svg viewBox="0 0 130 100" width="72" height="55">
+        <path d="M110 40 c 10 3, 10 14, 4 19"
+              fill="none" stroke="var(--blue)" stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M16 52 C 5 66, 8 85, 23 85"
+              fill="none" stroke="var(--blue)" stroke-width="12" stroke-linecap="round"/>
+        <g fill="var(--blue)">
+          <ellipse cx="76" cy="44" rx="35" ry="28"/>
+          <rect x="50" y="62" width="16" height="30" rx="7"/>
+          <rect x="88" y="62" width="16" height="30" rx="7"/>
+          <circle cx="38" cy="46" r="26"/>
+        </g>
+        <ellipse cx="54" cy="34" rx="15" ry="17" fill="var(--blue-deep)"/>
+        <circle cx="27" cy="38" r="3.6" fill="#fff"/>
+      </svg>
+    </div>
+
+    <p class="answer__overline">마지막 단계</p>
+    <h1 class="answer__title">정답을 입력하세요</h1>
+
+    <!-- novalidate: 브라우저 기본 경고 대신 game.js 가 판정합니다 -->
+    <form class="login" action="page6.html" method="get" novalidate>
+      <div class="field answer__field">
+        <!--
+          ┌────────────────────────────────────────────────────────────┐
+          │  정답은 아래 pattern 값 하나만 바꾸면 됩니다.               │
+          │  현재: 전국청소년미디어교육                                 │
+          └────────────────────────────────────────────────────────────┘
+          한글 정답은 자리수를 미리 알려주지 않으려고 입력 길이를
+          제한하지 않았습니다. name 속성이 없어 주소창에도 남지 않습니다.
+        -->
+        <input class="field__input answer__input"
+               type="text"
+               pattern="전국사이버폭력실태조사"
+               required
+               placeholder="정답 입력"
+               autocomplete="off"
+               spellcheck="false"
+               autofocus>
+        <button class="field__go" type="submit" aria-label="정답 확인">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor"
+                  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="error" role="status">정답이 아닙니다. 다시 시도하세요.</p>
+    </form>
+
+    <!-- 회색 안내 문구 -->
+    <p class="panel__hint">띄어쓰기 없이 입력하세요</p>
+
+  </div>
+
+</body>
+</html>

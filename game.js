@@ -63,12 +63,21 @@
   var timeEl  = hud.querySelector('.hud__time');
   var pauseEl = hud.querySelector('.hud__pause');
 
-  hud.querySelector('.hud__reset').addEventListener('click', function () {
+  function resetGame() {
     if (!window.confirm('타이머를 0으로 되돌리고 시작 화면으로 갑니다. 계속할까요?')) return;
     writeStart(0);
     writePausedAt(0);
     location.href = 'index.html';
-  });
+  }
+
+  hud.querySelector('.hud__reset').addEventListener('click', resetGame);
+
+  /* 페이지 안에 따로 놓은 초기화 버튼(예: 마무리 영상 화면 오른쪽 아래).
+     data-reset 만 붙이면 위쪽 초기화와 똑같이 동작합니다. */
+  var extraResets = document.querySelectorAll('[data-reset]');
+  for (var r = 0; r < extraResets.length; r++) {
+    extraResets[r].addEventListener('click', resetGame);
+  }
 
   pauseEl.addEventListener('click', function () {
     var start = readStart();
@@ -83,6 +92,12 @@
     }
     tick();
   });
+
+  /* 게임이 끝났을 때 기록을 그 자리에 얼려 둡니다(범인을 맞혔을 때 사용).
+     이미 멈춰 있으면 그대로 둡니다 — 두 번 부르면 시간이 어긋납니다. */
+  function stopTimer() {
+    if (readStart() && !readPausedAt()) writePausedAt(Date.now());
+  }
 
   function tick() {
     var start = readStart();
@@ -150,6 +165,39 @@
     pw.addEventListener('input', function () {
       login.classList.remove('is-wrong');
     });
+  }
+
+  /* ---------- 페이지 6 의 범인 지목 ----------
+     정답 카드에는 data-correct 와 data-next 가 붙어 있습니다.
+     맞히면 타이머를 멈추고 다음 페이지로, 틀리면 팝업만 띄웁니다. */
+
+  var suspects = document.querySelector('.suspects');
+  if (suspects) {
+    var retry = document.querySelector('.retry');
+
+    suspects.addEventListener('click', function (e) {
+      var card = e.target.closest('.suspect');
+      if (!card) return;
+
+      if (card.hasAttribute('data-correct')) {
+        stopTimer();
+        location.href = card.getAttribute('data-next');
+        return;
+      }
+
+      card.classList.remove('is-wrong');
+      void card.offsetWidth;          /* 흔들림 애니메이션 다시 재생 */
+      card.classList.add('is-wrong');
+
+      if (retry && retry.showModal) retry.showModal();
+      else window.alert('범인이 아닙니다. 다시 선택하세요.');
+    });
+
+    if (retry) {
+      retry.querySelector('.retry__btn').addEventListener('click', function () {
+        retry.close();
+      });
+    }
   }
 
   /* ---------- 페이지 0 의 시작 버튼 ----------

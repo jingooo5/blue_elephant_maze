@@ -16,12 +16,6 @@
      어두운 사진을 넣을 거면 아래 "어두운 배경용" 주석 블록도 함께 켜세요. */
   --cover: #ffffff;
 
-  /* --- 페이지 4 배경 ------------------------------------------------------
-     images/secret_talk.jpg 를 그대로 씁니다. 화면을 꽉 채우되(cover) 비율이
-     달라 잘리는 건 감수합니다 — 그대로 두거나, 잘리면 안 되는 사진이면
-     아래 값을 var(--wallpaper) 처럼 background-size 만 contain 으로 바꾸세요. */
-  --secret: url("images/secret_talk.jpg") center / cover no-repeat;
-
   --blue:       #1f5fd0;   /* 푸른코끼리 파랑 */
   --blue-deep:  #14418f;
   --blue-tint:  #eef3fd;
@@ -35,6 +29,12 @@
 
   --font: "Pretendard", "Pretendard Variable", -apple-system, BlinkMacSystemFont,
           "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+
+  /* 명조 계열 — 범인 지목 화면처럼 무게가 필요한 문구에만 씁니다.
+     별도 폰트 파일을 받지 않고 mac(AppleMyungjo)·Windows(바탕)에 이미 있는
+     글꼴을 순서대로 시도합니다. */
+  --font-serif: "Nanum Myeongjo", "AppleMyungjo", "Batang", "바탕",
+                "Songti TC", serif;
 }
 
 * { box-sizing: border-box; }
@@ -806,23 +806,16 @@ body {
   .login.is-wrong .field__input.ios-alert__input { animation: none; }
 }
 
-/* =========================================================
-   4. 비밀 대화방 공개
-   ========================================================= */
-
-.reveal {
-  min-height: 100vh;
-  margin: 0;
-  background: var(--secret);
-}
+/* 페이지 4(비밀 대화방 공개)도 아래 "2. 사진 화면"의 .stage 배치를 그대로 씁니다. */
 
 /* =========================================================
-   2. 사진 화면
+   2·4. 사진 화면 (photo.html, page4.html 공용)
    ========================================================= */
 
 /* 카카오톡 캡처(세로로 긴 사진)와 말풍선(가로로 넓은 사진)을 나란히 놓는
    flex 배치입니다. 서로 자기 자리 안에서만 커지기 때문에 창 크기가
-   바뀌어도 겹치지 않습니다. 남는 자리는 검은 배경 그대로 보입니다. */
+   바뀌어도 겹치지 않습니다. 남는 자리는 검은 배경 그대로 보입니다.
+   두 페이지가 같은 규칙을 쓰므로, 한쪽만 다르게 하려면 클래스를 나눠야 합니다. */
 .stage {
   margin: 0;
   height: 100vh;
@@ -855,4 +848,332 @@ body {
   box-shadow:
     0 2px 5px rgba(0, 0, 0, .3),
     0 16px 34px -14px rgba(0, 0, 0, .7);
+}
+
+/* =========================================================
+   5. 정답 입력 · 7. 마무리 영상
+   ========================================================= */
+
+.answer {
+  min-height: 100vh;
+  margin: 0;
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  padding: 4vh 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 시작 화면과 같은 옅은 파란 기운 — 마지막 단계도 캠페인 화면임을 알립니다. */
+.answer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 55% at 50% 30%, var(--blue-tint), transparent 70%),
+    linear-gradient(180deg, transparent 60%, rgba(31, 95, 208, .06));
+  pointer-events: none;
+}
+
+/* .panel(잠금화면 카드)을 그대로 쓰되, 정답이 길어 폭만 넓힙니다. */
+.answer__panel {
+  position: relative;
+  width: 440px;
+  padding: 38px 40px 30px;
+}
+
+.answer__emblem {
+  line-height: 0;
+  margin-bottom: 18px;
+}
+
+.answer__overline {
+  margin: 0 0 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  color: var(--blue);
+}
+
+.answer__title {
+  margin: 0 0 26px;
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--ink);
+}
+
+.answer__field {
+  height: 58px;
+  border-radius: 14px;
+}
+
+/* .field__input 의 기본값(넓은 자간 = 비밀번호용)을 한글 단어에 맞게 되돌립니다. */
+.field__input.answer__input {
+  padding-left: 18px;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -.01em;
+  text-align: center;
+}
+
+.field__input.answer__input::placeholder {
+  letter-spacing: -.01em;
+  font-weight: 400;
+}
+
+.answer__field .field__go {
+  background: var(--blue);
+}
+
+.login.is-wrong .answer__field .field__go {
+  background: var(--danger);
+}
+
+/* --- 7. 마무리 영상 --- */
+
+.video {
+  height: 100vh;
+  margin: 0;
+  background: #000000;
+  overflow: hidden;
+}
+
+/* 화면을 꽉 채웁니다. 영상 비율과 화면 비율이 다르면 유튜브 플레이어가
+   알아서 위아래(또는 좌우)를 검게 남깁니다. */
+.video__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* 오른쪽 아래 초기화 버튼. 뒤로가기(.backlink)와 같은 알약 모양이되,
+   되돌리는 동작이라 눌렀을 때만 빨갛게 바뀝니다. */
+.resetlink {
+  position: fixed;
+  right: 22px;
+  bottom: 20px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 17px 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .94);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: #5c646f;
+  cursor: pointer;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, .2),
+    0 12px 28px -14px rgba(0, 0, 0, .6);
+  backdrop-filter: blur(8px);
+  transition: color .15s ease, border-color .15s ease;
+}
+
+.resetlink:hover {
+  color: var(--danger);
+  border-color: #e0b4b0;
+}
+
+.resetlink svg { transition: transform .3s ease; }
+.resetlink:hover svg { transform: rotate(-70deg); }
+
+/* 재생 중에 뜨는 유튜브 컨트롤 바(높이 약 50px)와 겹치지 않게 한 단 올립니다.
+   그대로 두면 우리 버튼이 유튜브 전체화면·재생 버튼을 가립니다. */
+.video .resetlink,
+.video .backlink {
+  bottom: 74px;
+}
+
+/* =========================================================
+   6. 범인 지목
+   ========================================================= */
+
+.accuse {
+  min-height: 100vh;
+  margin: 0;
+  background: #000000;
+  color: #fff;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: clamp(28px, 5vh, 52px);
+  padding: 8vh 24px 4vh;
+  overflow: hidden;
+}
+
+/* 입장하자마자 흐릿하고 넓게 벌어진 글자가 또렷하게 모이며 떠오릅니다. */
+.accuse__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(38px, 5.2vw, 64px);
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 0 0 28px rgba(255, 255, 255, .28);
+  animation: accuseTitleIn 1.5s cubic-bezier(.22, .61, .36, 1) both;
+}
+
+@keyframes accuseTitleIn {
+  from {
+    opacity: 0;
+    letter-spacing: .42em;
+    filter: blur(9px);
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: .1em;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+/* 문구가 다 떠오른 뒤에 카드가 따라 나옵니다. */
+.suspects {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(14px, 1.8vw, 22px);
+  animation: suspectsIn .9s ease-out 1.15s both;
+}
+
+@keyframes suspectsIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.suspect {
+  width: clamp(140px, 15vw, 196px);
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0;
+  border: 1px solid #26292f;
+  border-radius: 22px;
+  background: #101216;
+  font: inherit;
+  color: #cfd4dc;
+  cursor: pointer;
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    background-color .16s ease,
+    box-shadow .16s ease;
+}
+
+.suspect:hover {
+  transform: translateY(-4px);
+  background: #16191f;
+  border-color: var(--elephant);
+  box-shadow: 0 18px 34px -18px var(--elephant);
+}
+
+.suspect:active { transform: translateY(-1px); }
+
+.suspect:focus-visible {
+  outline: 2px solid var(--elephant);
+  outline-offset: 3px;
+}
+
+.suspect__art {
+  width: 58%;
+  height: auto;
+}
+
+.suspect__label {
+  font-size: clamp(13px, 1.05vw, 15px);
+  font-weight: 600;
+  letter-spacing: -.01em;
+}
+
+/* 카드마다 코끼리 색만 바꿔 끼웁니다. 아래 두 변수를 SVG 가 그대로 씁니다. */
+.suspect--green  { --elephant: #3ddc84; --elephant-deep: #1f9d5a; }
+.suspect--pink   { --elephant: #ff7eb6; --elephant-deep: #d64f8f; }
+.suspect--orange { --elephant: #ff9f43; --elephant-deep: #e07b1f; }
+.suspect--purple { --elephant: #a78bfa; --elephant-deep: #7c5cd6; }
+
+/* 틀린 카드는 한 번 흔들어 어느 걸 눌렀는지 알려 줍니다. */
+.suspect.is-wrong {
+  border-color: #7d2b26;
+  animation: shake .34s ease;
+}
+
+/* --- 다시 선택하라는 팝업 --- */
+.retry {
+  width: min(340px, 86vw);
+  padding: 0;
+  border: 1px solid #2c3038;
+  border-radius: 18px;
+  background: #14171c;
+  color: #fff;
+  overflow: hidden;   /* 아래 버튼의 각진 모서리가 밖으로 삐져나오지 않도록 */
+  box-shadow: 0 28px 60px -24px rgba(0, 0, 0, .9);
+}
+
+.retry:focus { outline: none; }
+
+.retry::backdrop {
+  background: rgba(0, 0, 0, .62);
+  backdrop-filter: blur(3px);
+}
+
+.retry__body {
+  padding: 28px 26px 22px;
+  text-align: center;
+}
+
+.retry__title {
+  margin: 0 0 8px;
+  font-family: var(--font-serif);
+  font-size: 21px;
+  font-weight: 400;
+  letter-spacing: .02em;
+}
+
+.retry__text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #9aa1ab;
+}
+
+.retry__btn {
+  display: block;
+  width: 100%;
+  padding: 14px 0;
+  border: 0;
+  border-top: 1px solid #2c3038;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #6fa8ff;
+  cursor: pointer;
+  transition: background-color .15s ease;
+}
+
+.retry__btn:hover { background: #1a1e25; }
+
+/* 팝업이 열리면 이 버튼에 자동으로 포커스가 갑니다. 기본 파란 사각 테두리
+   대신 안쪽에 맞춰 그려서 팝업 모양을 해치지 않게 합니다. */
+.retry__btn:focus-visible {
+  outline: 2px solid #6fa8ff;
+  outline-offset: -3px;
+  border-radius: 0 0 16px 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accuse__title,
+  .suspects        { animation-duration: .01ms; }
+  .suspect.is-wrong { animation: none; }
 }
