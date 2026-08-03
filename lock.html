@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>잠김</title>
+<link rel="stylesheet" href="styles.css">
+<script src="game.js" defer></script>
+</head>
+<body class="lock" data-prev="index.html">
+
+  <!-- ===== 상단 상태 표시줄 ===== -->
+  <header class="statusbar">
+    <!-- 노트북이 마지막으로 덮인 시각. 연출용 고정값이라 바꿔도 됩니다. -->
+    <span class="statusbar__time">11월 12일 (화) &nbsp;02:47</span>
+    <span class="statusbar__icons">
+      <svg viewBox="0 0 20 14" width="19" height="13" aria-hidden="true">
+        <path d="M10 12.2a1.35 1.35 0 1 0 0-2.7 1.35 1.35 0 0 0 0 2.7Z" fill="currentColor"/>
+        <path d="M6.6 8.4a5 5 0 0 1 6.8 0M3.7 5.4a9.2 9.2 0 0 1 12.6 0M1 2.6a13.3 13.3 0 0 1 18 0"
+              fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <svg viewBox="0 0 26 13" width="25" height="12" aria-hidden="true">
+        <rect x=".75" y=".75" width="21.5" height="11.5" rx="3" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".55"/>
+        <rect x="2.75" y="2.75" width="6.5" height="7.5" rx="1.5" fill="currentColor"/>
+        <path d="M24 4.5v4a2.2 2.2 0 0 0 0-4Z" fill="currentColor" opacity=".55"/>
+      </svg>
+    </span>
+  </header>
+
+  <!-- ===== 잠금 화면 본문 ===== -->
+  <main class="lock__center">
+    <div class="panel">
+
+      <!-- 계정 사진 자리. 이미지 준비되면 <img class="avatar__img" src="images/avatar.jpg" alt=""> 추가 -->
+      <div class="avatar" aria-hidden="true"><span>코</span></div>
+
+      <!-- 피해자 이름 -->
+      <h1 class="panel__name">회색 코끼리</h1>
+      <p class="panel__sub">노트북 비밀번호를 입력하세요</p>
+
+      <!-- novalidate: 브라우저 기본 경고 말풍선을 끄고 game.js 가 직접 판정합니다.
+           (자리수를 다 채우고 확인을 눌렀을 때만 경고가 뜨도록) -->
+      <form class="login" action="photo.html" method="get" novalidate>
+        <div class="field">
+          <!--
+            ┌──────────────────────────────────────────────────────────────┐
+            │  비밀번호는 아래 pattern 값 하나만 바꾸면 됩니다.  현재: 0721   │
+            │  예) 여섯 자리로 바꾸려면  pattern="204815"                    │
+            │  영문·숫자 조합도 가능:    pattern="bluesky"                   │
+            └──────────────────────────────────────────────────────────────┘
+            자리수는 pattern 길이를 보고 game.js 가 알아서 맞춥니다.
+            name 속성이 없으므로 주소창에 비밀번호가 남지 않습니다.
+          -->
+          <input class="field__input"
+                 type="password"
+                 pattern="0721"
+                 required
+                 placeholder="••••"
+                 autocomplete="off"
+                 spellcheck="false"
+                 autofocus>
+          <button class="field__go" type="submit" aria-label="잠금 해제">
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+              <path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor"
+                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <p class="error" role="status">비밀번호가 올바르지 않습니다. 다시 시도하세요.</p>
+      </form>
+
+      <!-- 힌트 문구. 필요 없으면 이 줄을 지우세요. -->
+      <p class="panel__hint">힌트 &middot; 네 자리 숫자</p>
+    </div>
+  </main>
+
+  <footer class="lock__foot">
+    <span class="lock__foot-dot" aria-hidden="true"></span>
+    잠금 상태 &nbsp;·&nbsp; 마지막 로그인 실패 3회
+  </footer>
+
+</body>
+</html>

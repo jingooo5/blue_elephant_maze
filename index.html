@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>푸른코끼리 — 코낄중학교</title>
+<link rel="stylesheet" href="styles.css">
+<script src="game.js" defer></script>
+</head>
+<!-- 시작 페이지라 data-prev 없음 → 뒤로가기 버튼도 없음 -->
+<body class="intro">
+
+  <main class="intro__inner">
+
+    <!-- 푸른코끼리 엠블럼 (SVG, 이미지 파일 불필요) -->
+    <div class="emblem" aria-hidden="true">
+      <svg viewBox="0 0 130 100" width="132" height="102">
+        <!-- 꼬리 -->
+        <path d="M110 40 c 10 3, 10 14, 4 19"
+              fill="none" stroke="var(--blue)" stroke-width="4.5" stroke-linecap="round"/>
+        <!-- 코 -->
+        <path d="M16 52 C 5 66, 8 85, 23 85"
+              fill="none" stroke="var(--blue)" stroke-width="12" stroke-linecap="round"/>
+        <g fill="var(--blue)">
+          <!-- 몸통 · 다리 -->
+          <ellipse cx="76" cy="44" rx="35" ry="28"/>
+          <rect x="50" y="62" width="16" height="30" rx="7"/>
+          <rect x="88" y="62" width="16" height="30" rx="7"/>
+          <!-- 머리 -->
+          <circle cx="38" cy="46" r="26"/>
+        </g>
+        <!-- 귀 -->
+        <ellipse cx="54" cy="34" rx="15" ry="17" fill="var(--blue-deep)"/>
+        <!-- 눈 -->
+        <circle cx="27" cy="38" r="3.6" fill="#fff"/>
+      </svg>
+    </div>
+
+    <p class="intro__overline">사이버폭력 예방 프로그램</p>
+
+    <h1 class="intro__title">
+      <span class="intro__title-main">푸른코끼리</span>
+      <span class="intro__title-sep" aria-hidden="true"></span>
+      <span class="intro__title-sub">코낄중학교</span>
+    </h1>
+
+    <!-- 도입 문구. 방 컨셉에 맞게 자유롭게 고치세요. -->
+    <p class="intro__lead">
+      누군가는 장난이라고 했고,<br>
+      누군가는 그 말 때문에 잠을 잃었습니다.<br>
+      남겨진 노트북에서 그날의 흔적을 찾아 주세요.
+    </p>
+
+    <!-- data-start: 이 링크를 누르면 타이머가 시작됩니다 (game.js) -->
+    <a class="btn" href="lock.html" data-start>
+      <span class="btn__label">새 게임 시작</span>
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+        <path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor"
+              stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+  </main>
+
+  <footer class="intro__foot">
+    코낄중학교 학생생활교육부 &nbsp;·&nbsp; 푸른코끼리 캠페인
+  </footer>
+
+</body>
+</html>

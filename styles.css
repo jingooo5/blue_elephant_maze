@@ -1,0 +1,587 @@
+/* =========================================================
+   방탈출 - 피해자의 노트북
+   JavaScript 없음. 비밀번호 검증은 input[pattern] + CSS로 처리.
+   ========================================================= */
+
+:root {
+  /* --- 바탕화면 ---------------------------------------------------------
+     이미지 준비되면 아래 --wallpaper 한 줄만 교체:
+       --wallpaper: url("images/wallpaper.jpg") center / cover no-repeat;
+     지금은 이미지가 없으므로 흰 배경입니다. */
+  --wallpaper: #ffffff;
+
+  /* --- 시작 화면 배경 ----------------------------------------------------
+     이미지 준비되면:
+       --cover: url("images/cover.jpg") center / cover no-repeat;
+     어두운 사진을 넣을 거면 아래 "어두운 배경용" 주석 블록도 함께 켜세요. */
+  --cover: #ffffff;
+
+  --blue:       #1f5fd0;   /* 푸른코끼리 파랑 */
+  --blue-deep:  #14418f;
+  --blue-tint:  #eef3fd;
+
+  --ink:        #16181c;   /* 본문 글자 */
+  --ink-soft:   #64696f;   /* 보조 글자 */
+  --line:       #dcdee2;   /* 테두리 */
+  --surface:    #ffffff;   /* 패널 */
+  --accent:     #223349;   /* 버튼 */
+  --danger:     #b3261e;   /* 오류 */
+
+  --font: "Pretendard", "Pretendard Variable", -apple-system, BlinkMacSystemFont,
+          "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* =========================================================
+   공통 — 타이머 · 뒤로가기 (game.js 가 붙입니다)
+
+   세 페이지 위에 떠 있는 요소라 어떤 배경 사진이 깔려도 읽히도록
+   흰 알약 모양 + 그림자로 처리했습니다.
+   ========================================================= */
+
+.hud {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 8px 8px 15px;
+  background: rgba(255, 255, 255, .94);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow:
+    0 2px 5px rgba(16, 20, 28, .06),
+    0 12px 28px -16px rgba(16, 20, 28, .5);
+  backdrop-filter: blur(8px);
+}
+
+.hud[hidden] { display: none; }   /* flex 가 hidden 속성을 덮지 않도록 */
+
+.hud__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--blue);
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+/* 일시정지 중에는 깜빡임을 멈추고 회색으로 바꿔서 "멈췄다"는 상태를 알립니다. */
+.hud.is-paused .hud__dot {
+  background: #b7bcc3;
+  animation: none;
+}
+
+@keyframes pulse { 50% { opacity: .2; } }
+
+.hud__time {
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: .02em;
+  font-variant-numeric: tabular-nums;   /* 숫자 폭 고정 → 초가 바뀌어도 안 흔들림 */
+  color: var(--ink);
+  min-width: 6.6ch;
+  text-align: center;
+}
+
+.hud.is-paused .hud__time { color: #9aa0a8; }
+
+.hud__bar {
+  width: 1px;
+  height: 16px;
+  background: var(--line);
+}
+
+.hud__reset,
+.hud__pause {
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #8a919b;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.hud__reset:hover {
+  background: #f5f2f2;
+  color: var(--danger);
+}
+
+.hud__pause {
+  color: var(--blue);
+}
+
+.hud__pause:hover {
+  background: var(--blue-tint);
+  color: var(--blue-deep);
+}
+
+.hud.is-paused .hud__pause {
+  background: var(--blue-tint);
+}
+
+.backlink {
+  position: fixed;
+  left: 22px;
+  bottom: 20px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 17px 9px 13px;
+  background: rgba(255, 255, 255, .94);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: #5c646f;
+  text-decoration: none;
+  box-shadow:
+    0 2px 5px rgba(16, 20, 28, .06),
+    0 12px 28px -16px rgba(16, 20, 28, .5);
+  backdrop-filter: blur(8px);
+  transition: color .15s ease, border-color .15s ease;
+}
+
+.backlink:hover {
+  color: var(--ink);
+  border-color: #c3c8d0;
+}
+
+.backlink svg { transition: transform .15s ease; }
+.backlink:hover svg { transform: translateX(-2px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hud__dot { animation: none; }
+}
+
+/* =========================================================
+   0. 시작 화면
+   ========================================================= */
+
+.intro {
+  min-height: 100vh;
+  background: var(--cover);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 흰 배경만 있을 때 허전하지 않도록. 사진을 넣으면 자연스럽게 가려집니다. */
+.intro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 55% at 50% 30%, var(--blue-tint), transparent 70%),
+    linear-gradient(180deg, transparent 60%, rgba(31, 95, 208, .06));
+  pointer-events: none;
+}
+
+.intro__inner {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+  padding: 0 24px 4vh;
+}
+
+.emblem {
+  line-height: 0;
+  margin-bottom: 26px;
+}
+
+.intro__overline {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  color: var(--blue);
+}
+
+.intro__title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-weight: 700;
+  letter-spacing: -.03em;
+  line-height: 1.1;
+}
+
+.intro__title-main {
+  font-size: 52px;
+  color: var(--blue-deep);
+}
+
+.intro__title-sep {
+  width: 1.5px;
+  height: 34px;
+  background: #c9d4e6;
+}
+
+.intro__title-sub {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  color: #5a6472;
+}
+
+.intro__lead {
+  margin: 26px 0 0;
+  font-size: 17px;
+  line-height: 1.95;
+  letter-spacing: -.01em;
+  color: #4a5260;
+}
+
+/* --- 시작 버튼 --- */
+.btn {
+  margin-top: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 17px 38px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  text-decoration: none;
+  box-shadow: 0 12px 26px -12px rgba(31, 95, 208, .75);
+  transition: background-color .16s ease, transform .12s ease, box-shadow .16s ease;
+}
+
+.btn:hover {
+  background: var(--blue-deep);
+  box-shadow: 0 16px 30px -12px rgba(20, 65, 143, .8);
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 8px 18px -12px rgba(20, 65, 143, .8);
+}
+
+.btn svg {
+  transition: transform .16s ease;
+}
+
+.btn:hover svg {
+  transform: translateX(3px);
+}
+
+.intro__foot {
+  position: relative;
+  padding: 0 0 26px;
+  text-align: center;
+  font-size: 12.5px;
+  letter-spacing: .02em;
+  color: #99a1ac;
+}
+
+/* 노트북 세로 해상도가 낮을 때 여백만 줄임 */
+@media (max-height: 760px) {
+  .emblem            { margin-bottom: 18px; transform: scale(.85); }
+  .intro__title-main { font-size: 44px; }
+  .intro__title-sub  { font-size: 24px; }
+  .intro__lead       { margin-top: 20px; font-size: 16px; line-height: 1.85; }
+  .btn               { margin-top: 32px; }
+}
+
+/* --- 어두운 배경 사진을 넣을 때 -----------------------------------------
+   --cover 에 어두운 이미지를 넣었다면 아래 주석을 풀면 글씨가 밝게 바뀝니다.
+
+.intro::before        { background: rgba(10, 18, 32, .55); }
+.intro__title-main    { color: #fff; }
+.intro__title-sub     { color: #cdd6e4; }
+.intro__title-sep     { background: rgba(255, 255, 255, .35); }
+.intro__overline      { color: #8fb6ff; }
+.intro__lead          { color: #e3e9f2; }
+.intro__foot          { color: rgba(255, 255, 255, .6); }
+.emblem svg           { --blue: #7ea9f5; --blue-deep: #cfe0ff; }
+*/
+
+/* =========================================================
+   1. 잠금 화면
+   ========================================================= */
+
+.lock {
+  min-height: 100vh;
+  background: var(--wallpaper);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 흰 배경이 허전하지 않도록 아주 옅은 명암만. 사진을 넣으면 자연스럽게 덮입니다. */
+.lock::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 8%, rgba(0, 0, 0, .035), transparent 62%),
+    linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, .045));
+  pointer-events: none;
+}
+
+/* --- 상태 표시줄 --- */
+.statusbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: var(--ink-soft);
+}
+
+.statusbar__icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* --- 가운데 정렬 --- */
+.lock__center {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0 24px 6vh;
+}
+
+/* --- 로그인 패널 --- */
+.panel {
+  width: 360px;
+  padding: 40px 36px 34px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 2px rgba(16, 20, 28, .05),
+    0 18px 44px -22px rgba(16, 20, 28, .32);
+}
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f0f1f3;
+  border: 1px solid var(--line);
+  font-size: 30px;
+  font-weight: 600;
+  color: #9ba0a7;
+  user-select: none;
+}
+
+.avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.panel__name {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 650;
+  letter-spacing: -.015em;
+}
+
+.panel__sub {
+  margin: 7px 0 24px;
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+
+/* --- 입력 필드 --- */
+.field {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  padding-right: 6px;
+  background: #fbfbfc;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  transition: border-color .16s ease, background-color .16s ease;
+}
+
+.field:focus-within {
+  background: #fff;
+  border-color: #9aa3b0;
+}
+
+.field__input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0 4px 0 16px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 19px;
+  letter-spacing: .22em;
+  color: var(--ink);
+  outline: none;
+}
+
+.field__input::placeholder {
+  color: #b6bac0;
+  letter-spacing: .22em;
+}
+
+.field__go {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity .16s ease, transform .1s ease;
+}
+
+.field__go:hover  { opacity: .88; }
+.field__go:active { transform: scale(.95); }
+
+/* --- 오류 표시 -------------------------------------------------------
+   .is-wrong 은 game.js 가 붙입니다. 자리수를 다 채우고 확인을 눌러 틀렸을
+   때만 붙고, 다시 한 글자라도 입력하면 떨어집니다. */
+.error {
+  margin: 12px 2px 0;
+  min-height: 1.2em;          /* 자리 미리 확보 → 문구가 떠도 화면이 안 밀림 */
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--danger);
+  visibility: hidden;
+}
+
+.login.is-wrong .error {
+  visibility: visible;
+}
+
+.login.is-wrong .field {
+  border-color: var(--danger);
+  background: #fdf6f5;
+  animation: shake .34s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-7px); }
+  45%      { transform: translateX(6px); }
+  70%      { transform: translateX(-3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login.is-wrong .field { animation: none; }
+}
+
+.panel__hint {
+  margin: 22px 0 0;
+  font-size: 12.5px;
+  letter-spacing: .02em;
+  color: #9198a1;
+}
+
+/* --- 하단 --- */
+.lock__foot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 0 26px;
+  font-size: 12.5px;
+  letter-spacing: .02em;
+  color: #9198a1;
+}
+
+.lock__foot-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--danger);
+  opacity: .8;
+}
+
+/* 노트북 세로 해상도가 낮을 때(예: 1280×720) 여백만 조금 줄임 */
+@media (max-height: 760px) {
+  .panel      { padding: 30px 32px 26px; }
+  .avatar     { width: 72px; height: 72px; margin-bottom: 16px; font-size: 26px; }
+  .panel__sub { margin-bottom: 18px; }
+}
+
+/* =========================================================
+   2. 사진 화면
+   ========================================================= */
+
+.stage {
+  margin: 0;
+  height: 100vh;
+  background: #ffffff;   /* 이미지가 없는 동안의 배경 */
+  overflow: hidden;
+}
+
+.stage__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* 화면을 가득 채움. 사진 잘림이 싫으면 contain 으로 */
+  object-position: center;
+}
+
+/* 이미지 넣으면 지울 자리표시자 */
+.stage__placeholder {
+  height: 100%;
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  text-align: center;
+  color: #b9bec5;
+  background-image:
+    repeating-linear-gradient(45deg, #fafafb 0 14px, #f4f5f6 14px 28px);
+}
+
+.stage__placeholder strong {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: .01em;
+  color: #a2a8b0;
+}
+
+.stage__placeholder span {
+  font-size: 13px;
+}
