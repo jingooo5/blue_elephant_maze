@@ -1023,8 +1023,8 @@ body {
 
 .accuse__subtitle {
   margin: -12px 0 0;
-  font-size: 18px;
-  color: #8a8a8a;
+  font-size: 24px;
+  color: #a3a3a3;
   text-align: center;
   animation: accuseTitleIn 1.5s cubic-bezier(.22, .61, .36, 1) both;
 }
