@@ -1100,7 +1100,7 @@ body {
 .suspect--green  { --elephant: #3ddc84; --elephant-deep: #1f9d5a; }
 .suspect--pink   { --elephant: #ff7eb6; --elephant-deep: #d64f8f; }
 .suspect--orange { --elephant: #ff9f43; --elephant-deep: #e07b1f; }
-.suspect--purple { --elephant: #a78bfa; --elephant-deep: #7c5cd6; }
+.suspect--red { --elephant: #f8b4b4; --elephant-deep: #d32f2f; }
 
 /* 틀린 카드는 한 번 흔들어 어느 걸 눌렀는지 알려 줍니다. */
 .suspect.is-wrong {
