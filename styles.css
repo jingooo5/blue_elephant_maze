@@ -1021,6 +1021,14 @@ body {
   animation: accuseTitleIn 1.5s cubic-bezier(.22, .61, .36, 1) both;
 }
 
+.accuse__subtitle {
+  margin: -12px 0 0;
+  font-size: 13px;
+  color: #8a8a8a;
+  text-align: center;
+  animation: accuseTitleIn 1.5s cubic-bezier(.22, .61, .36, 1) both;
+}
+
 @keyframes accuseTitleIn {
   from {
     opacity: 0;
